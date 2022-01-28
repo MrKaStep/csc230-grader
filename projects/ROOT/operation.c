@@ -1,6 +1,6 @@
 /**
    @file operation.c
-   @author Jack Ballard (jeballar)
+   @author John Doe (jdoe)
    
    Performs one of the four basic arithmetic operations and
    detects overflow or divide-by-zero errors.
@@ -19,46 +19,46 @@
 long plus( long a, long b )
 {
    
-   long result = a + b;
-   
-   // Both a and b are positive and sum is negative
-   if( a > 0 && b > 0 && result < 0) {
-      exit( OVERFLOW );
-   }
-   
-   // Both a and b are negative and the sum is positive
-   else if( a < 0 && b < 0 && result > 0) {
-      exit( OVERFLOW );
-   }
-   
-   // a is negative and the absolute value is less than b but sum is negative
-   else if( a < 0 && ( 0 - a ) < b && result < 0) {
-      exit( OVERFLOW );
-   }
-   
-   // b is negative and the absolute value is less than a but sum is negative
-   else if ( b < 0 && ( 0 - b) < a && result < 0) {
-      exit( OVERFLOW );
-   }
-   
-   // a is negative and the absolute value is greater than b but sum is positive
-   else if( a < 0 && ( 0 - a ) > b && result > 0) {
-      exit( OVERFLOW );
-   }
-   
-   // b is negative and the absolute value is greater than a but sum is positive
-   else if ( b < 0 && ( 0 - b ) > a && result > 0) {
-      exit( OVERFLOW );
-   }
-   
-   // Difference is larger than the largest long value or smaller than the smallest long value
-   else if ( result < LONG_MIN || result > LONG_MAX ) {
-      exit( OVERFLOW );
-   }
-   // If sum passes these tests, there is no overflow
-   else {
-      return result;
-   }    
+	long result = a + b;
+	
+	// Both a and b are positive and sum is negative
+	if( a > 0 && b > 0 && result < 0) {
+		exit( OVERFLOW );
+	}
+	
+	// Both a and b are negative and the sum is positive
+	else if( a < 0 && b < 0 && result > 0) {
+		exit( OVERFLOW );
+	}
+	
+	// a is negative and the absolute value is less than b but sum is negative
+	else if( a < 0 && ( 0 - a ) < b && result < 0) {
+		exit( OVERFLOW );
+	}
+	
+	// b is negative and the absolute value is less than a but sum is negative
+	else if ( b < 0 && ( 0 - b) < a && result < 0) {
+		exit( OVERFLOW );
+	}
+	
+	// a is negative and the absolute value is greater than b but sum is positive
+	else if( a < 0 && ( 0 - a ) > b && result > 0) {
+		exit( OVERFLOW );
+	}
+	
+	// b is negative and the absolute value is greater than a but sum is positive
+	else if ( b < 0 && ( 0 - b ) > a && result > 0) {
+		exit( OVERFLOW );
+	}
+	
+	// Difference is larger than the largest long value or smaller than the smallest long value
+	else if ( result < LONG_MIN || result > LONG_MAX ) {
+		exit( OVERFLOW );
+	}
+	// If sum passes these tests, there is no overflow
+	else {
+		return result;
+	}	 
 }
 
 /** 

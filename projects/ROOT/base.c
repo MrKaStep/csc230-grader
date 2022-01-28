@@ -1,6 +1,6 @@
 /**
    @file base.c
-   @author Jack Ballard (jeballar)
+   @author John Doe (jdoe)
    
    Reads in values in an arbitrary base, then writes them to output in 
    defined base.
@@ -45,7 +45,7 @@ int skipSpace( void )
    int ch = getchar();
    
    while ( ch == ' ' ) {
-      ch = getchar();
+	  ch = getchar();
    }
    return ch;
    
@@ -59,17 +59,17 @@ long readValue( void )
 {
 
  // Value we've parsed so far.
-   long value = 0;
-   
-   // Get the next input character.
-   int ch = getchar();
-   
-   bool isNeg = false;
-   
-   if ( ch == '-' ) {
-      isNeg = true;
-      ch = getchar();
-   }
+	long value = 0;
+	
+	// Get the next input character.
+	int ch = getchar();
+	
+	bool isNeg = false;
+	
+	if ( ch == '-' ) {
+		isNeg = true;
+		ch = getchar();
+	}
    
    // Keep reading as long as we're seeing digits.
    while ( (ch >= 48 && ch <= 57) || (ch >= 65 && ch <= 90) ) {
@@ -117,61 +117,61 @@ long readValue( void )
 
 /**
    Recursively prints one value at a time with high-order digits first
-   @param val value being printed
+	@param val value being printed
 */
 void recursion ( unsigned long val )
 {
 
-      int d = val % BASE;
-      
-      char ch;
-      // Convert it to a character, e.g, 13 -> 'D' or 3 -> '3'
-      if ( d >= 0 && d <= 9 ) {
-          ch = d + CONVERSION_NUMBER;
-      }
-      else {
-         ch = d + CONVERSION_LETTER;
-      }
-   
-      // Slide remaining digits to the right.
-      val =  val / BASE;
-      
-      if ( val == 0 ) {
-         printf( "%c", ch );
-      }
-      else {
-         recursion ( val );
-         printf( "%c", ch );
-      }
+		int d = val % BASE;
+		
+		char ch;
+		// Convert it to a character, e.g, 13 -> 'D' or 3 -> '3'
+		if ( d >= 0 && d <= 9 ) {
+			 ch = d + CONVERSION_NUMBER;
+		}
+		else {
+			ch = d + CONVERSION_LETTER;
+		}
+	
+		// Slide remaining digits to the right.
+		val =  val / BASE;
+		
+		if ( val == 0 ) {
+			printf( "%c", ch );
+		}
+		else {
+			recursion ( val );
+			printf( "%c", ch );
+		}
 }
 
-/**   
-   Prints value in converted base while taking into consideration special cases
-   @param val value being printed
+/**	
+	Prints value in converted base while taking into consideration special cases
+	@param val value being printed
 */
 void writeValue ( long val )
 {
-   unsigned long recVal;
-   
-   if ( val == 0 ) {
-      printf( "%ld\n", val );
-   }
-   else {
-      if ( val == LONG_MIN ) {
-         recVal = POSITIVE_LONG_MIN;
-         printf( "%c", NEGATIVE ); 
-      }   
-      else {
-         if ( val < 0 ) {
-            recVal = 0 - val;
-            printf( "%c", NEGATIVE ); 
-         }
-         else {
-            recVal = val;
-         }
-      }
-   
-      recursion( recVal );
-      printf( "\n" );
-   }
+	unsigned long recVal;
+	
+	if ( val == 0 ) {
+		printf( "%ld\n", val );
+	}
+	else {
+		if ( val == LONG_MIN ) {
+			recVal = POSITIVE_LONG_MIN;
+			printf( "%c", NEGATIVE ); 
+		}	
+		else {
+			if ( val < 0 ) {
+				recVal = 0 - val;
+				printf( "%c", NEGATIVE ); 
+			}
+			else {
+				recVal = val;
+			}
+		}
+	
+		recursion( recVal );
+		printf( "\n" );
+	}
 }

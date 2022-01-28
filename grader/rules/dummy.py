@@ -14,7 +14,7 @@ class FileCountRule:
         file_count = len(list(project.files()))
         if file_count != self.desired:
             res.penalty = 100500
-            res.messages.append("Invalid number of files")
-            res.comments.append(f"Found {file_count} files. Required {self.desired}")
+            res.comments.append("Invalid number of files")
+            res.messages.append(f"Found {file_count} files. Required {self.desired}")
         return res
-        
+

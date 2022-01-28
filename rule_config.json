@@ -1,20 +1,28 @@
 {
     "rules": [
         {
-            "name": "magic_numbers",
+            "name": "compound",
             "config": {
-                "per_magic_penalty": 0,
-                "penalty_limit": 3
-            }
-        },
-        {
-            "name": "hard_tabs",
-            "config": {
-                "occurence_thresholds": 50,
-                "penalty_step": 0.5,
-                "penalty_limit": 3,
-                "per_file_penalty_limit": 1,
-                "per_file_annotate_comments": true
+                "rules": [
+                    {
+                        "name": "magic_numbers",
+                        "config": {
+                            "per_magic_penalty": 0,
+                            "penalty_limit": 3
+                        }
+                    },
+                    {
+                        "name": "hard_tabs",
+                        "config": {
+                            "occurence_thresholds": 50,
+                            "penalty_step": 0.5,
+                            "penalty_limit": 3,
+                            "per_file_penalty_limit": 1,
+                            "per_file_annotate_comments": true
+                        }
+                    }
+                ],
+                "penalty_limit": 0.5
             }
         },
         {

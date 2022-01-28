@@ -32,12 +32,12 @@ class ReviewStorage:
 
     def _get_reviews(self, tag):
         if tag is None:
-            return copy.deepcopy(self.data)
+            return deepcopy(self.data)
         return {s: r[tag] for s, r in self.data.items()}
 
     def _get_review(self, student_id, tag):
         if tag is None:
-            return copy.deepcopy(self.data[student_id])
+            return deepcopy(self.data[student_id])
         return self.data[student_id][tag]
 
 
@@ -71,8 +71,8 @@ def delete_review(student_id, tag):
 
 
 def get_reviews(tag=None):
-    return _get_instance._get_reviews(tag)
+    return _get_instance()._get_reviews(tag)
 
 def get_review(student_id, tag=None):
-    return _get_instance._get_review(student_id, tag)
+    return _get_instance()._get_review(student_id, tag)
 

@@ -1,6 +1,6 @@
 /**
    @file calc.c
-   @author Jack Ballard (jeballar)
+   @author John Doe (jdoe)
    
    Top-level component that reads and evaluates expressions and prints the result
 
