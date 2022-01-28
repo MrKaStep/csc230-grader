@@ -12,6 +12,7 @@ _rule_registry = {}
 
 def _register_rule(name, cls):
     # _rule_registry[name] = cls
+    assert camel_to_snake_case(name) not in _rule_registry
     _rule_registry[camel_to_snake_case(name)] = cls
 
 
@@ -34,7 +35,7 @@ def add_penalty_limit(cls):
                 res.penalty = min(res.penalty, self.penalty_limit)
         except Exception as e:
             res = Result()
-            result.messages.append(f"Execution of rule {cls.__name__} failed at {project}:\n{e}")
+            res.messages.append(f"Execution of rule {cls.__name__} failed at {project}:\n{e}")
         return res
     cls.apply = new_apply
 

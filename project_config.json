@@ -11,5 +11,28 @@
         {
             "source": "calc.c"
         }
-    ]
+    ],
+    "resources": [
+        {
+            "template": "expected-{:0>2}.txt",
+            "start_index": 1,
+            "count": 21
+        },
+        {
+            "template": "input-{:0>2}.txt",
+            "start_index": 1,
+            "count": 21
+        },
+        {
+            "template": "expected-ec-{:0>2}.txt",
+            "start_index": 1,
+            "count": 2
+        },
+        {
+            "template": "input-ec-{:0>2}.txt",
+            "start_index": 1,
+            "count": 2
+        }
+    ],
+    "misc": ["README.md", "test.sh", ".gitignore", "Makefile"]
 }

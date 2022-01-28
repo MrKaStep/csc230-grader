@@ -5,7 +5,7 @@ from grader.result import Result
 
 
 @rule
-class FileCountRule:
+class DummyRule:
     def __init__(self, config: dict):
         self.desired = config["desired"]
 

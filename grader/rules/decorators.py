@@ -65,3 +65,24 @@ def occurence_counter(cls):
     cls.apply = new_apply
 
     return cls
+
+
+def binary_rule(cls):
+    old_init = cls.__init__
+    def new_init(self, config):
+        old_init(self, config)
+        self.fail_penalty = config["fail_penalty"]
+    cls.__init__ = new_init
+
+    old_apply = cls.apply
+    def new_apply(self, o):
+        res = old_apply(self, o)
+        if res.penalty:
+            res.penalty = self.fail_penalty
+        else:
+            res.penalty = 0
+        return res
+    cls.apply = new_apply
+
+    return cls
+
