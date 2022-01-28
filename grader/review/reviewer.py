@@ -22,7 +22,7 @@ def _make_callable(cls):
 
 def _enable_macros(cls):
     def expand_macros(self, message):
-        for k, v in self.macros:
+        for k, v in self.macros.items():
             message = message.replace(k, v)
         return message
 
@@ -36,6 +36,12 @@ def _enable_macros(cls):
         self.macros = config.get("macros", {})
 
     cls.__init__ = init
+
+    old_review = cls.review
+    def new_review(self, project, result):
+        return self.expand_macros(old_review(self, project, result))
+
+    cls.review = new_review
 
 
 

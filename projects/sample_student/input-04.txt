@@ -1,0 +1,7 @@
+1234560 + 6543210
+Text after the first line will be ignored.  It's not considered
+an error.  The program can exit after processing the first line.
+This simplifies the program a little bit, and it makes it easier
+to use the program interactively.  If we wanted the program to
+detect extra input like this, then the user would have to type
+ctrl-D to end the input each time they wanted to use the program.

@@ -10,7 +10,7 @@ from grader.util import camel_to_snake_case
 _rule_registry = {}
 
 
-def register_rule(name, cls):
+def _register_rule(name, cls):
     # _rule_registry[name] = cls
     _rule_registry[camel_to_snake_case(name)] = cls
 
@@ -34,7 +34,7 @@ def add_penalty_limit(cls):
                 res.penalty = min(res.penalty, self.penalty_limit)
         except Exception as e:
             res = Result()
-            result.messages.append(f"Execution of rule {cls.__name__} failed at {project}:\n{e}"
+            result.messages.append(f"Execution of rule {cls.__name__} failed at {project}:\n{e}")
         return res
     cls.apply = new_apply
 
@@ -46,7 +46,7 @@ def rule(cls, enable_penalty_limit=True):
 
     if not cls.__name__.endswith("Rule"):
         raise ValueError(f"invalid rule class name: {name}. Rule class names should end with 'Rule'")
-    register_rule(cls.__name__[:-len("Rule")], cls)
+    _register_rule(cls.__name__[:-len("Rule")], cls)
 
     if enable_penalty_limit:
         cls = add_penalty_limit(cls)

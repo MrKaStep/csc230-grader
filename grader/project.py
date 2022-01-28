@@ -5,14 +5,20 @@ class File:
         self.name = filename
         self.type = type
         self.path = root / filename
+        self.contents = None
+        self.lines = None
 
     def read(self):
-        with open(self.path) as f:
-            return f.read()
+        if not self.contents:
+            with open(self.path) as f:
+                self.contents = f.read()
+        return self.contents
 
     def readlines(self):
-        with open(self.paht) as f:
-            return f.readlines()
+        if not self.lines:
+            with open(self.path) as f:
+                self.lines = f.readlines()
+        return self.lines
 
     def __str__(self):
         return f"<File {self.path}>"

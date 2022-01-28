@@ -1,0 +1,15 @@
+{
+    "modules": [
+        {
+            "source": "base.c",
+            "header": "base.h"
+        },
+        {
+            "source": "operation.c",
+            "header": "operation.h"
+        },
+        {
+            "source": "calc.c"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "project_root_template": "projects/STUDENT_ID",
+    "review_tag": "test",
+    "storage_path": ".reviews.json",
+    "reviewer": {
+        "name": "vim",
+        "config": {
+            "session": "session.vim",
+            "macros": {
+                "MAGIC": "A lot of magic numbers"
+            }
+        }
+    },
+    "students_list": "students"
+}

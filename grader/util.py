@@ -14,8 +14,39 @@ def create_tempfile(contents, mode="w", **kwargs):
     return f
 
 
-def get_c_without_comments(path):
-    gcc = local["gcc"]
-    cleaner = gcc["-fpreprocessed", "-dD", "-E"]
+def get_c_without_comments(f):
+    lines = f.readlines()
 
-    return "\n".join(cleaner(path).split("\n")[1:])
+    res = []
+    in_comment = False
+
+    for l in lines:
+        l = l.strip()
+        if not in_comment:
+            line_comment = l.find("//")
+            if line_comment != -1:
+                res.append(l[:line_comment])
+                continue
+
+        cur = ""
+        while True:
+            if not in_comment:
+                tag = l.find("/*")
+                if tag != -1:
+                    in_comment = True
+                    cur = cur + l[:tag]
+                    l = l[tag + 2:]
+                    continue
+                cur = cur + l
+                break
+            else:
+                tag = l.find("*/")
+                if tag != -1:
+                    in_comment = False
+                    l = l[tag + 2:]
+                    continue
+                break
+        res.append(cur)
+
+    return "\n".join(res)
+

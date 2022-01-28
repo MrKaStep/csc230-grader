@@ -61,7 +61,6 @@ class VimReviewer:
         else:
             review = review.strip()
         
-        review = self.expand_macros(review)
         return review
 
 
