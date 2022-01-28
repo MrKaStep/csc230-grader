@@ -1,6 +1,6 @@
 /**
    @file base.c
-   @author Jack Ballard (jeballar)
+   @author John Doe (jdoe)
    
    Reads in values in an arbitrary base, then writes them to output in 
    defined base.

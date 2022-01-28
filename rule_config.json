@@ -1,0 +1,29 @@
+{
+    "rules": [
+        {
+            "name": "magic_numbers",
+            "config": {
+                "per_magic_penalty": 0,
+                "penalty_limit": 3
+            }
+        },
+        {
+            "name": "hard_tabs",
+            "config": {
+                "occurence_thresholds": 50,
+                "penalty_step": 0.5,
+                "penalty_limit": 3
+            }
+        },
+        {
+            "name": "line_endings",
+            "config": {
+                "occurence_thresholds": [1, 10, 20],
+                "penalty_step": 0.5,
+                "penalty_limit": 2,
+                "per_file_penalty_limit": 1
+            }
+        }
+    ]
+}
+

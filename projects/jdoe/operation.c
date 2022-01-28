@@ -1,6 +1,6 @@
 /**
    @file operation.c
-   @author Jack Ballard (jeballar)
+   @author John Doe (jdoe)
    
    Performs one of the four basic arithmetic operations and
    detects overflow or divide-by-zero errors.
