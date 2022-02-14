@@ -12,9 +12,9 @@ class FileType(Enum):
 
 class File:
     def __init__(self, filename: str, type: FileType, root: Path):
-        self.name = filename
         self.type = type
         self.path = root / filename
+        self.name = self.path.name
         self.contents = None
         self.lines = None
 
@@ -33,6 +33,15 @@ class File:
     def __str__(self):
         return f"<File {self.path}>"
 
+    def __repr__(self):
+        return str(self)
+
+    def __hash__(self):
+        return hash(self.path)
+
+    def __eq__(self, other):
+        return self.path == other.path
+
 
 class Module:
     def __init__(self, config: dict, root: Path):
@@ -41,9 +50,15 @@ class Module:
         name = None
         
         if "source" in config:
-            self.source = File(config["source"], FileType.SOURCE, root)
+            self.sources = [File(config["source"], FileType.SOURCE, root)]
             name = config["source"][:-2]
+            self.source = self.sources[0]
+        elif "sources" in config:
+            self.sources = [File(s, FileType.SOURCE, root) for s in config["sources"]]
+            name = config["sources"][0][:-2]
+            self.source = self.sources[0]
         else:
+            self.sources = None
             self.source = None
 
         if "header" in config:
@@ -61,13 +76,16 @@ class Module:
         self.name = name
 
     def files(self):
-        if self.source:
-            yield self.source
+        if self.sources:
+            yield from self.sources
         if self.header:
             yield self.header
 
     def __str__(self):
         return f"<Module {self.name} at {self.root}>"
+
+    def __repr__(self):
+        return str(self)
 
 
 class ResourceSet:
@@ -86,15 +104,27 @@ class ResourceSet:
             yield File(self.template.format(i), FileType.EXTRA, self.root)
 
 
+def unique(gen_func):
+    def wrapper(*args, **kwargs):
+        s = set()
+        def new(o):
+            if o not in s:
+                s.add(o)
+                return True
+            return False
+        yield from filter(new, gen_func(*args, **kwargs))
+    return wrapper
+
+
 class Project:
     def __init__(self, config: dict, root: Path):
-        self.modules = {}
+        self._modules = [] 
         self.resources = []
         self.misc = []
         self.root = root
         for module in config["modules"]:
             m = Module(module, root)
-            self.modules[m.name] = m
+            self._modules.append(m)
 
         for resource_set_config in config.get("resources", []):
             self.resources.append(ResourceSet(resource_set_config, root))
@@ -102,17 +132,23 @@ class Project:
         for filename in config.get("misc", []):
             self.misc.append(File(filename, FileType.EXTRA, root))
 
+    def modules(self):
+        return self._modules
+
+    @unique
     def files(self):
-        for m in self.modules.values():
+        for m in self.modules():
             yield from m.files()
         for r in self.resources:
             yield from r.files()
         yield from self.misc
     
+    @unique
     def source_files(self):
-        for m in self.modules.values():
+        for m in self.modules():
             yield from m.files()
 
+    @unique
     def resource_set_files(self, name: str):
         for r in self.resources:
             if r.name == name:
@@ -120,4 +156,7 @@ class Project:
 
     def __str__(self):
         return f"<Project {self.root}>"
+
+    def __repr__(self):
+        return str(self)
 

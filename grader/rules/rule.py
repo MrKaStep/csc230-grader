@@ -42,15 +42,14 @@ def add_penalty_limit(cls):
     return cls
 
 
-def rule(cls, enable_penalty_limit=True):
+def rule(cls):
     assert hasattr(cls, "apply") and callable(getattr(cls, "apply"))
 
     if not cls.__name__.endswith("Rule"):
         raise ValueError(f"invalid rule class name: {name}. Rule class names should end with 'Rule'")
     _register_rule(cls.__name__[:-len("Rule")], cls)
 
-    if enable_penalty_limit:
-        cls = add_penalty_limit(cls)
+    cls = add_penalty_limit(cls)
 
     def call(self, *args, **kwargs):
         return self.apply(*args, **kwargs)

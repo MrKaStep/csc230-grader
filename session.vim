@@ -59,11 +59,11 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 60 + 36) / 73)
-exe 'vert 1resize ' . ((&columns * 126 + 127) / 254)
-exe '2resize ' . ((&lines * 60 + 36) / 73)
-exe 'vert 2resize ' . ((&columns * 127 + 127) / 254)
-exe '3resize ' . ((&lines * 9 + 36) / 73)
+exe '1resize ' . ((&lines * 56 + 34) / 69)
+exe 'vert 1resize ' . ((&columns * 123 + 123) / 247)
+exe '2resize ' . ((&lines * 56 + 34) / 69)
+exe 'vert 2resize ' . ((&columns * 123 + 123) / 247)
+exe '3resize ' . ((&lines * 9 + 34) / 69)
 argglobal
 balt ROOT/base.h
 setlocal keymap=
@@ -191,7 +191,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 30) / 60)
+let s:l = 1 - ((0 * winheight(0) + 28) / 56)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -200,7 +200,7 @@ normal! 0
 wincmd w
 argglobal
 if bufexists("ROOT/base.h") | buffer ROOT/base.h | else | edit ROOT/base.h | endif
-balt ROOT/base.c
+balt COMPILATION_base
 setlocal keymap=
 setlocal noarabic
 setlocal noautoindent
@@ -326,7 +326,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 30) / 60)
+let s:l = 1 - ((0 * winheight(0) + 28) / 56)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -469,11 +469,11 @@ keepjumps 1
 normal! 0
 wincmd w
 2wincmd w
-exe '1resize ' . ((&lines * 60 + 36) / 73)
-exe 'vert 1resize ' . ((&columns * 126 + 127) / 254)
-exe '2resize ' . ((&lines * 60 + 36) / 73)
-exe 'vert 2resize ' . ((&columns * 127 + 127) / 254)
-exe '3resize ' . ((&lines * 9 + 36) / 73)
+exe '1resize ' . ((&lines * 56 + 34) / 69)
+exe 'vert 1resize ' . ((&columns * 123 + 123) / 247)
+exe '2resize ' . ((&lines * 56 + 34) / 69)
+exe 'vert 2resize ' . ((&columns * 123 + 123) / 247)
+exe '3resize ' . ((&lines * 9 + 34) / 69)
 tabnext
 edit ROOT/operation.c
 set splitbelow splitright
@@ -490,11 +490,11 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 60 + 36) / 73)
-exe 'vert 1resize ' . ((&columns * 126 + 127) / 254)
-exe '2resize ' . ((&lines * 60 + 36) / 73)
-exe 'vert 2resize ' . ((&columns * 127 + 127) / 254)
-exe '3resize ' . ((&lines * 9 + 36) / 73)
+exe '1resize ' . ((&lines * 56 + 34) / 69)
+exe 'vert 1resize ' . ((&columns * 122 + 123) / 247)
+exe '2resize ' . ((&lines * 56 + 34) / 69)
+exe 'vert 2resize ' . ((&columns * 124 + 123) / 247)
+exe '3resize ' . ((&lines * 9 + 34) / 69)
 argglobal
 balt ROOT/operation.h
 setlocal keymap=
@@ -622,7 +622,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 30) / 60)
+let s:l = 1 - ((0 * winheight(0) + 28) / 56)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -757,7 +757,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 30) / 60)
+let s:l = 1 - ((0 * winheight(0) + 28) / 56)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -899,11 +899,11 @@ normal! zt
 keepjumps 1
 normal! 0
 wincmd w
-exe '1resize ' . ((&lines * 60 + 36) / 73)
-exe 'vert 1resize ' . ((&columns * 126 + 127) / 254)
-exe '2resize ' . ((&lines * 60 + 36) / 73)
-exe 'vert 2resize ' . ((&columns * 127 + 127) / 254)
-exe '3resize ' . ((&lines * 9 + 36) / 73)
+exe '1resize ' . ((&lines * 56 + 34) / 69)
+exe 'vert 1resize ' . ((&columns * 122 + 123) / 247)
+exe '2resize ' . ((&lines * 56 + 34) / 69)
+exe 'vert 2resize ' . ((&columns * 124 + 123) / 247)
+exe '3resize ' . ((&lines * 9 + 34) / 69)
 tabnext
 edit ROOT/calc.c
 set splitbelow splitright
@@ -916,8 +916,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 60 + 36) / 73)
-exe '2resize ' . ((&lines * 9 + 36) / 73)
+exe '1resize ' . ((&lines * 56 + 34) / 69)
+exe '2resize ' . ((&lines * 9 + 34) / 69)
 argglobal
 balt REVIEW_PATH
 setlocal keymap=
@@ -1045,7 +1045,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 30) / 60)
+let s:l = 1 - ((0 * winheight(0) + 28) / 56)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -1187,17 +1187,18 @@ normal! zt
 keepjumps 1
 normal! 0
 wincmd w
-exe '1resize ' . ((&lines * 60 + 36) / 73)
-exe '2resize ' . ((&lines * 9 + 36) / 73)
+exe '1resize ' . ((&lines * 56 + 34) / 69)
+exe '2resize ' . ((&lines * 9 + 34) / 69)
 tabnext 1
 set stal=1
-badd +0 ROOT/base.c
-badd +0 REVIEW_PATH
-badd +0 base.h
-badd +0 ROOT/base.h
-badd +0 ROOT/operation.c
-badd +0 ROOT/operation.h
-badd +0 ROOT/calc.c
+badd +1 ROOT/base.c
+badd +1 ROOT/operation.c
+badd +1 ROOT/calc.c
+badd +1 ROOT/base.h
+badd +1 COMPILATION_base
+badd +1 REVIEW_PATH
+badd +1 ROOT/operation.h
+badd +1 base.h
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
   silent exe 'bwipe ' . s:wipebuf
 endif

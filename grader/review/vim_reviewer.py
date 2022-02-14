@@ -65,6 +65,8 @@ class VimReviewer:
 
 
     def review(self, project: Project, result: Result):
+        if result.custom.get("no_review", False):
+            return ""
         with ExitStack() as stack:
             self.exit_stack = stack
             vim = local["vim"]

@@ -3,7 +3,7 @@ from .rule import rule
 from grader.project import File
 from grader.result import Result
 from grader.util import get_c_without_comments
-from grader.rules.decorators import per_file, occurence_counter
+from grader.rules.decorators import per_source_file, occurence_counter
 
 import re
 
@@ -21,7 +21,7 @@ def find_magic_number(line):
     return None
 
 @rule
-@per_file(annotate_comments=False)
+@per_source_file(annotate_comments=False)
 class MagicNumbersRule:
     def __init__(self, config):
         self.whitelist = config.get("whitelist", [0, 1])
@@ -55,7 +55,7 @@ class MagicNumbersRule:
 
 @rule
 @occurence_counter
-@per_file(annotate_comments=False)
+@per_source_file(annotate_comments=False)
 class LineEndingsRule:
     def __init__(self, config):
         pass
@@ -69,7 +69,7 @@ class LineEndingsRule:
         return res
 
 @rule
-@per_file(annotate_comments=False)
+@per_source_file(annotate_comments=False)
 @occurence_counter
 class HardTabsRule:
     def __init__(self, config):
@@ -84,7 +84,7 @@ class HardTabsRule:
         return res
 
 @rule
-@per_file()
+@per_source_file()
 class LastLineEndingRule:
     def __init__(self, config):
         pass

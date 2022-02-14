@@ -40,6 +40,7 @@ class ReviewApp:
             if storage.has_review(student_id, self.tag):
                 continue
             self.do_review(student_id)
+            print(student_id)
 
 
 def handle_review(args):

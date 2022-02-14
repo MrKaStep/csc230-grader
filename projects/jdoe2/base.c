@@ -1,6 +1,5 @@
 /**
    @file base.c
-   @author John Doe (jdoe)
    
    Reads in values in an arbitrary base, then writes them to output in 
    defined base.
@@ -37,7 +36,6 @@
 
 /**
    Skips all non-whitespace characters or EOF and returns following character
-   @return ch character after whitespace
 */
 int skipSpace( void )
 {

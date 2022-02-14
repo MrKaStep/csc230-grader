@@ -162,7 +162,7 @@ void writeValue ( long val )
 			printf( "%c", NEGATIVE ); 
 		}	
 		else {
-			if ( val < 0 ) {
+			if ( var < 0 ) {
 				recVal = 0 - val;
 				printf( "%c", NEGATIVE ); 
 			}
