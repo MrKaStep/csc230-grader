@@ -1,0 +1,13 @@
+{
+    "project_root_template": "projects/STUDENT_ID",
+    "review_tag": "comments",
+    "storage_path": ".reviews.json",
+    "reviewer": {
+        "name": "vscode",
+        "config": {
+            "dummy_project": "projects/jdoe"
+        }
+    },
+    "students_list": "students"
+}
+
