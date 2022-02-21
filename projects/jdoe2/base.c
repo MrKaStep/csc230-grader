@@ -1,5 +1,6 @@
 /**
    @file base.c
+   @author Jane Doe (jdoe2)
    
    Reads in values in an arbitrary base, then writes them to output in 
    defined base.

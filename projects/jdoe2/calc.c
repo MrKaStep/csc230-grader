@@ -1,6 +1,6 @@
 /**
    @file calc.c
-   @author John Doe (jdoe)
+   @author Jane Doe (jdoe2)
    
    Top-level component that reads and evaluates expressions and prints the result
 

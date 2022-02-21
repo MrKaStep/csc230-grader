@@ -31,7 +31,7 @@ class ReviewApp:
         project = Project(self.project_config, self._project_root(student_id))
 
         res = self.rule(project)
-        review = self.reviewer(project, res)
+        review = (self.reviewer(project, res) if "no_review" not in res.custom else "")
 
         storage.add_review(student_id, self.tag, review)
 
@@ -40,7 +40,6 @@ class ReviewApp:
             if storage.has_review(student_id, self.tag):
                 continue
             self.do_review(student_id)
-            print(student_id)
 
 
 def handle_review(args):

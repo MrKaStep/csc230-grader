@@ -5,7 +5,7 @@
     "reviewer": {
         "name": "vim",
         "config": {
-            "render_type": "together",
+            "render_type": "separate",
             "session": "session.vim",
             "macros": {
                 "MAGIC": "A lot of magic numbers"

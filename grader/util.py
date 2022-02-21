@@ -22,6 +22,13 @@ def create_tempfile(contents, mode="w", **kwargs):
     return f
 
 
+def create_file(path, contents, mode="w", **kwargs):
+    f = open(path, mode=mode, **kwargs)
+    f.write(contents)
+    f.flush()
+    return f
+
+
 #TODO(mrkastep): fix lines like "void f(int /*param*/) { // other comment"
 def get_c_without_comments(f):
     lines = f.readlines()
