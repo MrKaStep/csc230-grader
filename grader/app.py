@@ -15,7 +15,7 @@ class ReviewApp:
         self.rule = construct_rule({"name": "compound", "config": rule_config})
         self.project_config = project_config
         self.project_root_template = config["project_root_template"]
-        self.tag = config["review_tag"]
+        self.tag = config.get("review_tag", None)
 
         self.reviewer = construct_reviewer(config["reviewer"]["name"], config["reviewer"]["config"])
 

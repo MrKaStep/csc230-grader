@@ -12,9 +12,9 @@ from itertools import product
 @with_machine_rule
 class CompilationRule:
     def __init__(self, config):
-        self.compiler = config["compiler"]
-        self.cflags = config["cflags"]
-        self.ldflags = config["ldflags"]
+        self.compiler = config.get("compiler", "gcc")
+        self.cflags = config.get("cflags", "")
+        self.ldflags = config("ldflags", "")
         self.modules = config["modules"]
 
     def apply(self, project, session):

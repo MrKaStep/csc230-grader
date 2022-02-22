@@ -17,15 +17,19 @@ class ReviewStorage:
             json.dump(self.data, f, indent='\t')
 
     def _has_review(self, student_id, tag):
-        return student_id in self.data and tag in self.data[student_id]
+        return tag is not None and student_id in self.data and tag in self.data[student_id]
 
     def _add_review(self, student_id, tag, review):
+        if tag is None:
+            return
         if student_id not in self.data:
             self.data[student_id] = {}
         self.data[student_id][tag] = review
         self._persist()
 
     def _delete_review(self, student_id, tag):
+        if tag is None:
+            return
         if self.has_review(student_id, tag):
             del self.data[student_id][tag]
         self.persist()
