@@ -77,7 +77,7 @@ def handle_export(args):
             tags.add(tag)
 
 
-    with open(args.file, "w") as f:
+    with open(args.output, "w") as f:
         for student in students:
             values = [student]
             for tag in tags:
@@ -102,7 +102,7 @@ def run():
     review_parser.add_argument("-p", "--project-config", required=True)
 
     export_parser = subparsers.add_parser("export", add_help=False)
-    export_parser.add_argument("-f", "--file", required=True)
+    export_parser.add_argument("-o", "--output", required=True)
 
     args = parser.parse_args()
 
