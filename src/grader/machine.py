@@ -28,7 +28,11 @@ def with_machine_rule(cls):
     old_init = cls.__init__
     def new_init(self, config):
         old_init(self, config)
-        machine_type = config["machine"]["type"]
+        if "machine" not in config:
+            machine_type = "local"
+        else:
+            machine_type = config["machine"]["type"]
+
         if machine_type == "local":
             self.machine = get_local_machine()
         elif machine_type == "remote":
