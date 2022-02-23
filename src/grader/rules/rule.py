@@ -5,6 +5,7 @@ from grader.result import Result
 from grader.scope import Scope
 from grader.util import camel_to_snake_case
 
+import traceback
 
 # Enable automatic rule registration
 _rule_registry = {}
@@ -33,9 +34,9 @@ def add_penalty_limit(cls):
             res = old_apply(self, project, *args, **kwargs)
             if self.penalty_limit >= 0:
                 res.penalty = min(res.penalty, self.penalty_limit)
-        except Exception as e:
+        except Exception:
             res = Result()
-            res.messages.append(f"Execution of rule {cls.__name__} failed at {project}:\n{e}")
+            res.messages.append(f"Execution of rule {cls.__name__} failed at {project}:\n{traceback.format_exc()}")
         return res
     cls.apply = new_apply
 

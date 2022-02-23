@@ -83,10 +83,14 @@ class VscodeReviewer:
             result.penalty = 1
             result.comments = ["This is an example review"]
             result.messages = [f"Example message {i}" for i in range(1, 4)]
+            result.custom = {"EXAMPLE_CUSTOM_NAME": "Example custom contents"}
         review, messages = self.render_result(result)
         
         self.review_file = create_file(self.review_path, review, mode="w+")
         create_file(self.messages_path, messages)
+
+        for name, contents in result.custom.items():
+            create_file(self.project_path / name, contents)
 
 
     def _get_review(self):

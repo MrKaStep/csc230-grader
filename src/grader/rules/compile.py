@@ -5,6 +5,8 @@ from grader.rules.decorators import binary_rule
 from grader.machine import with_machine_rule
 from grader.result import Result
 
+from grader.util import get_object_file_name
+
 from itertools import product
 
 @rule
@@ -14,20 +16,21 @@ class CompilationRule:
     def __init__(self, config):
         self.compiler = config.get("compiler", "gcc")
         self.cflags = config.get("cflags", "")
-        self.ldflags = config("ldflags", "")
+        self.ldflags = config.get("ldflags", "")
         self.modules = config["modules"]
 
     def apply(self, project, session):
         res = Result()
         res.custom["no_review"] = True
 
-        modules = filter(lambda m: m.name in self.modules, project.modules)
-        sources = [s for m in modules for s in m.sources]
-        source_combos = product(m.sources for m in modules)
-        object_combos = map(lambda l: map(get_object_file_name, l), source_combos)
+        modules = list(filter(lambda m: m.name in self.modules, project.modules()))
+        sources = [s.name for m in modules for s in m.sources]
+        source_combos = list(product(*[[s.name for s in m.sources] for m in modules]))
+        object_combos = list(map(lambda l: list(map(get_object_file_name, l)), source_combos))
 
+        entire_message = ""
         for s in sources:
-            cmd = f"{self.compiler} {self.cflags} -c -o {get_object_file_name(s.name)} s.name"
+            cmd = f"{self.compiler} {self.cflags} -c -o {get_object_file_name(s)} {s}"
             retcode, out, err = session.run(cmd, retcode=None)
             if retcode or err.strip() != "" or out.strip() != "":
                 res.custom["no_review"] = False
@@ -36,10 +39,11 @@ class CompilationRule:
                 res.penalty = True
                 res.comments.append("Didn't compile")
 
-            res.custom[f"COMPILATION_{s.name}"] = f"{cmd}\nstdout:\n{out}\nstderr:\n{err}\n\n"
+            res.custom[f"COMPILATION_{s}"] = f"{cmd}\nstdout:\n{out}\nstderr:\n{err}\n\n"
+            entire_message += res.custom[f"COMPILATION_{s}"]
 
         linker_result = ""
-        for c in source_combos:
+        for c in object_combos:
             cmd = f"{self.compiler} {self.ldflags} {' '.join(c)}"
             retcode, out, err = session.run(cmd, retcode=None)
             if retcode or err.strip() != "" or out.strip() != "":
@@ -52,6 +56,9 @@ class CompilationRule:
             linker_result = linker_result + f"{cmd}\nstdout:\n{out}\nstderr:\n{err}\n\n"
 
         res.custom["COMPILATION_linker"] = linker_result
+
+        entire_message += linker_result
+        res.custom["COMPILATION_combined"] = entire_message
             
         return res
 

@@ -95,3 +95,4 @@ class LastLineEndingRule:
             res.penalty = 0.5
             res.comments.append("Missing newline at the end of file")
             res.messages.append("Missing newline at the end of file")
+        return res

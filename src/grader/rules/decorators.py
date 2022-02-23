@@ -59,7 +59,7 @@ def occurence_counter(cls):
     def new_init(self, config):
         old_init(self, config)
         self.occurence_thresholds = config.get("occurence_thresholds", 1)
-        self.penalty_step = config["penalty_step"]
+        self.penalty_step = config.get("penalty_step", 0)
     cls.__init__ = new_init
 
     old_apply = cls.apply
@@ -74,7 +74,8 @@ def occurence_counter(cls):
                 else:
                     break
         else:
-            res.penalty = (count // self.occurence_thresholds) * self.penalty_step
+            step = self.occurence_thresholds
+            res.penalty = ((count + step - 1) // step) * self.penalty_step
         return res
     cls.apply = new_apply
 
