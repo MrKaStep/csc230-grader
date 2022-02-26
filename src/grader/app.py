@@ -81,7 +81,7 @@ def handle_export(args):
         for student in students:
             values = [student]
             for tag in tags:
-                values.append(reviews.get(student, {}).get(tag, {}))
+                values.append(reviews.get(student, {}).get(tag, ""))
             f.write('\t'.join(values) + '\n')
 
 
