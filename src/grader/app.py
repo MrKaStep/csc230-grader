@@ -9,7 +9,6 @@ import json
 from plumbum import local
 
 
-
 class ReviewApp:
     def __init__(self, config, rule_config, project_config):
         self.rule = construct_rule({"name": "compound", "config": rule_config})
@@ -31,12 +30,7 @@ class ReviewApp:
         project = Project(self.project_config, self._project_root(student_id))
 
         res = self.rule(project)
-        if "no_review" in res.custom:
-            skip_review = res.custom["no_review"]
-            del res.custom["no_review"]
-        else:
-            skip_review = False
-        review = (self.reviewer(project, res) if not skip_review else "")
+        review = (self.reviewer(project, res) if res.need_review else "")
 
         storage.add_review(student_id, self.tag, review)
 

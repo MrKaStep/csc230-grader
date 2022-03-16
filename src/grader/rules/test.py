@@ -17,10 +17,10 @@ class TestRule:
         self.output_set_name = config["outputs"]
         self.retcode = config.get("retcode", 0)
 
-    def apply(self, project, session):
+    def apply(self, project):
         res = Result()
 
-        retcode, _, _ = session.run(self.build_command, retcode=None)
+        retcode, _, _ = self.session.run(self.build_command, retcode=None)
         if retcode:
             res.penalty = 10000
             res.comments.append("Program didn't compile")
@@ -34,14 +34,14 @@ class TestRule:
             copy(inp.path, self.machine.cwd)
             copy(exp.path, self.machine.cwd)
 
-            retcode, _, _ = session.run(f"timeout 1s ./a.out < {cwd / inp.name} > {cwd / 'output'}", retcode=None)
+            retcode, _, _ = self.session.run(f"timeout 1s ./a.out < {cwd / inp.name} > {cwd / 'output'}", retcode=None)
             if retcode != self.retcode:
                 res.penalty += 1
                 res.messages.append(f"{inp.name} failed: retcode {retcode}")
                 failed_tests.append(inp.name)
                 continue
 
-            retcode, _, _ = session.run(f"diff {cwd / 'output'} {cwd / exp.name}", retcode=None)
+            retcode, _, _ = self.session.run(f"diff {cwd / 'output'} {cwd / exp.name}", retcode=None)
             if retcode:
                 res.penalty += 1
                 res.messages.append(f"{inp.name} failed: diff")
@@ -51,6 +51,6 @@ class TestRule:
         if len(failed_tests):
             res.comments += [f"{t} failed" for t in failed_tests]
         else:
-            res.custom["no_review"] = True
+            res.need_review = False
         return res
 

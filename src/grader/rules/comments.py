@@ -5,6 +5,8 @@ from grader.result import Result
 from grader.rules.decorators import occurence_counter, per_source_file, per_module, binary_rule
 from grader.util import get_symbols
 
+from grader.machine import with_machine_rule
+
 
 def get_symbol_comments(code_path, symbols):
     in_comment = False
@@ -78,7 +80,7 @@ def get_symbol_comments(code_path, symbols):
     }
 
 
-def check_comments(source_path, header_path):
+def check_comments(source_path, header_path, machine=None, session=None):
     assert source_path.endswith(".c")
     if not source_path.exists():
         return {"messages": [f"{source_path.name} does not exist"]}
@@ -86,7 +88,7 @@ def check_comments(source_path, header_path):
     explanation = []
     messages = []
 
-    symbols = get_symbols(source_path)
+    symbols = get_symbols(source_path, machine, session)
 
     header_res = get_symbol_comments(header_path, symbols) if header_path else None
     source_res = get_symbol_comments(source_path, symbols)
@@ -184,6 +186,7 @@ class FileCommentRule:
 
 @rule
 @per_module(annotate_comments=False)
+@with_machine_rule
 class FunctionCommentsRule:
     def __init__(self, config):
         self.duplicate_comments_penalty = config.get("duplicate_comments_penalty", 0)

@@ -38,10 +38,7 @@ class VimReviewer:
         assert self.review_file is not None
         self.review_file.seek(0)
         review = self.review_file.read()
-        if self.render_type == ResultRenderType.TOGETHER:
-            review = review.split('\n')[0]
-        else:
-            review = review.strip()
+        review = review.split('\n')[0]
         
         return review
 

@@ -20,6 +20,12 @@ def get_remote_machine_with_password(host, user):
     return rem
 
 
+@_once
+def get_remote_machine(host, user, keyfile):
+    rem = ParamikoMachine(host, user=user, keyfile=keyfile)
+    return rem
+
+
 def get_local_machine():
     return local
 
@@ -35,8 +41,14 @@ def with_machine_rule(cls):
 
         if machine_type == "local":
             self.machine = get_local_machine()
+            self.files_to_copy = None
         elif machine_type == "remote":
-            self.machine = get_remote_machine_with_password(config["machine"]["host"], config["machine"]["user"])
+            if "keyfile" in config["machine"]:
+                self.machine = get_remote_machine(config["machine"]["host"], config["machine"]["user"], config["machine"]["keyfile"])
+            else:
+                self.machine = get_remote_machine_with_password(config["machine"]["host"], config["machine"]["user"])
+
+            self.files_to_copy = config["machine"].get("files_to_copy")
         else:
             raise ValueError(f"Invalid machine type: {config['machine']['type']}")
         self.machine_type = machine_type
@@ -46,22 +58,21 @@ def with_machine_rule(cls):
     def new_apply(self, project):
         with self.machine.tempdir() as tempdir:
             project_path = tempdir / "project"
-            copy(project.root, project_path)
+            project_path.mkdir()
+            if self.files_to_copy:
+                existing_files = set([f.name for f in project.files()])
+                for fname in self.files_to_copy:
+                    if fname in existing_files:
+                        copy(project.root / fname, project_path / fname)
+            else:
+                for f in project.files():
+                    copy(f.path, project_path / f.name)
 
             with self.machine.cwd(project_path):
-                session = self.machine.session()
-                session.run(f"cd {project_path}")
-
-            return old_apply(self, project, session)
+                self.session = self.machine.session()
+                self.session.run(f"cd {project_path}")
+                return old_apply(self, project)
     cls.apply = new_apply
         
-
-    # old_del = cls.__del__
-    # def new_del(self):
-    #     if self.machine_type == "remote":
-    #         self.machine.close()
-    #     old_del(self)
-    # cls.__del__ = new_del
-
     return cls
 

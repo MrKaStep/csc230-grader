@@ -68,21 +68,30 @@ def get_c_without_comments(f):
 
 
 def get_object_file_name(source_name):
-    return re.sub("\.[^\.]*$", ".o", source_name)
+    return local.path(re.sub("\.[^\.]*$", ".o", source_name))
 
 
 @lru_cache(maxsize=10)
-def get_symbols(source_path):
+def get_symbols(source_path, machine=None, session=None):
     assert source_path.name.endswith(".c")
-
-    gcc = local["gcc"]
+    assert machine is None and session is None or machine is not None and session is not None
 
     obj_path = get_object_file_name(source_path)
 
     messages = []
 
     try:
-        gcc("-o", obj_path, "-c", source_path)
+        if machine is None:
+            gcc = local["gcc"]
+            gcc("-o", obj_path, "-c", source_path)
+        else:
+            with machine.tempdir() as tempdir:
+                rem_source_path = tempdir / "src.c"
+                rem_obj_path = tempdir / "src.o"
+                copy(source_path, rem_source_path)
+                session.run(f"cd {tempdir}")
+                session.run("gcc -o src.o -c src.c")
+                copy(rem_obj_path, obj_path)
     except:
         raise RuntimeError(f"{source_path.name}: compilation failed")
 

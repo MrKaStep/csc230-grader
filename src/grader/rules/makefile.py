@@ -4,123 +4,124 @@ from grader.result import Result
 
 from grader.machine import with_machine_rule
 
+from enum import Enum
+
+import time
+
+
+class UpdateType(Enum):
+    CREATE = 1
+    REMOVE = 2
+    DELETE = 2
+    UPDATE = 3
+
+
+class Update:
+    def __init__(self, s):
+        l = s.split()
+        if len(l) != 2:
+            raise ValueError(f"Invalid update: '{s}'")
+
+        self.file = l[1]
+        if l[0] == "+":
+            self.type = UpdateType.CREATE
+        elif l[0] == "-":
+            self.type = UpdateType.REMOVE
+        elif l[0] == "u":
+            self.type = UpdateType.UPDATE
+        else:
+            raise ValueError(f"Invalid update: '{s}'")
+
+
+class Step:
+    def __init__(self, config, index):
+        self.index = index
+        self.command = config["command"]
+        self.prefix = config.get("prefix")
+        update_configs = config.get("updates")
+        self.updates = [Update(u) for u in update_configs] if update_configs else None
+
+        self.expected_commands = config.get("expected_commands")
+        self.exact_commands = config.get("exact_commands", False)
+
+
+    def check_output(self, out, res):
+        if self.expected_commands:
+            lines = out.strip().split("\n")
+            if len(lines) != len(self.expected_commands):
+                res.messages.append(f"Step {self.index} '{self.command}' failed: incorrect number of lines in the output")
+                return False
+
+            found = {}
+
+            for l in lines:
+                argv = l.split()
+                for c in self.expected_commands:
+                    if self.exact_commands:
+                        if set(argv) == set(c.split()):
+                            found[c] = True
+                    else:
+                        if all(a in argv for a in c.split()):
+                            found[c] = True
+            for c in self.expected_commands:
+                if c not in found:
+                    res.messages.append(f"Step {self.index} '{self.command}' failed: '{c}' not found in the output")
+                    return False
+
+        elif self.prefix:
+            for l in out.strip().split("\n"):
+                if not l.startswith(s.prefix):
+                    res.messages.append(f"Step {self.index} '{self.command}' failed: weird line in output:\n{l}")
+                    return False
+        return True
+
+
 @rule
 @with_machine_rule
 class MakefileRule:
     def __init__(self, config):
-        self.compiler = config.get("compiler", "gcc")
-        self.updates = config["updates"]
+        self.steps = [Step(s, i) for i, s in enumerate(config["steps"], 1)]
 
     def apply(self, project):
-        pass
+        res = Result()
 
-    def get_built_files(self, make_output):
-        files = []
-        for l in make_output.strip().split('\n'):
-            args = l.strip().split()
-            found = False
-            for i, arg in enumerate(args):
-                if arg == '-o':
-                    assert i < len(args) - 1
-                    files.append(args[i + 1])
-                    found = True
-                    break
+        for s in self.steps:
+            if s.updates is None:
+                self.session.run(s.command)
+                continue
 
-            if not found:
-                if '-c' in args:
-                    source_count = 0
-                    source = None
-                    for arg in args:
-                        if arg.endswith(".c"):
-                            source_count += 1
-                            source = arg
-                    if source_count == 1:
-                        files.append(source[:-1] + 'o')
+            before = {f.name: f.stat().st_mtime_ns for f in self.machine.cwd.list()}
 
-        return set(files)
-    
-    def test_makefile(self, rem):
-        initial_file_count = len(rem.cwd.list())
+            retcode, out, err = self.session.run(s.command, retcode=None)
+            if retcode != 0:
+                res.messages.append(f"Step {s.index} failed: exit code {retcode}\nstdout:\n{out}\nstderr:\n{err}\n")
+                return res
+            after = {f.name: f.stat().st_mtime_ns for f in self.machine.cwd.list()}
+            for u in s.updates:
+                if u.type == UpdateType.CREATE:
+                    if not (u.file not in before and u.file in after):
+                        res.messages.append(f"Step {s.index} '{s.command}' failed: {u.file} not created")
+                        return res
+                elif u.type == UpdateType.REMOVE:
+                    if not (u.file in before and u.file not in after):
+                        res.messages.append(f"Step {s.index} '{s.command}' failed: {u.file} not removed")
+                        return res
+                elif u.type == UpdateType.UPDATE:
+                    if not (u.file in before and u.file in after and before[u.file] != after[u.file]):
+                        res.messages.append(f"Step {s.index} '{s.command}' failed: {u.file} not updated")
+                        return res
 
-        retcode, out, err = self.session.run("make", retcode=None)
+            if not s.check_output(out, res):
+                return res
 
-        if retcode:
-            return {
-                "fail": "error",
-                "retcode": retcode,
-                "out": out,
-                "err": err,
-            }
+            checked_files = {u.file for u in s.updates}
+            for name in (set(before.keys()) | set(after.keys())) - checked_files:
+                time_before = before.get(name)
+                time_after = after.get(name)
+                if time_before != time_after:
+                    res.messages.append(f"Step {s.index} '{s.command}' failed: {name} changed: {time_before} != {time_after}")
+                    return res
 
-        if not rem.path("tour").exists():
-            return {
-                "fail": "exists",
-                "retcode": retcode,
-                "out": out,
-                "err": err,
-            }
+        res.need_review = False
+        return res
 
-        expected_files = set(["map.o", "input.o", "tour.o", "tour"])
-
-        for l in out.strip().split("\n"):
-            if not l.strip().startswith("gcc"):
-                return {
-                    "fail": f"weird_not_gcc: '{l}'",
-                    "retcode": retcode,
-                    "out": out,
-                    "err": err,
-                }
-
-            if "tour" in l.split() and l.count("tour.c") > 0:
-                return {
-                    "fail": f"weird_direct_source: '{l}'",
-                    "retcode": retcode,
-                    "out": out,
-                    "err": err,
-                }
-
-
-        found_files = get_built_files(out)
-        if found_files != expected_files:
-            return {
-                "fail": f"weird_mismatched_files: {list(found_files)}",
-                "retcode": retcode,
-                "out": out,
-                "err": err,
-            }
-
-        time.sleep(2)
-        session.run("touch map.h")
-        retcode, out, err = session.run("make", retcode=None)
-
-        if retcode:
-            return {
-                "fail": "error",
-                "retcode": retcode,
-                "out": out,
-                "err": err,
-            }
-
-        expected_files = set(["map.o", "tour.o", "tour"])
-        found_files = get_built_files(out)
-        if found_files != expected_files:
-            return {
-                "fail": f"select: rebuilt files {list(found_files)}",
-                "retcode": retcode,
-                "out": out,
-                "err": err,
-            }
-
-        retcode, out, err = session.run("make clean", retcode=None)
-        file_count = len(rem.cwd.list())
-        if file_count != initial_file_count:
-            return {
-                "fail": f"clean: initial {initial_file_count}, final {file_count}",
-                "retcode": retcode,
-                "out": out,
-                "err": err,
-            }
-
-        return {
-            "fail": None
-        }

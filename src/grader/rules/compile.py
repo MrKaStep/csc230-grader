@@ -19,9 +19,9 @@ class CompilationRule:
         self.ldflags = config.get("ldflags", "")
         self.modules = config["modules"]
 
-    def apply(self, project, session):
+    def apply(self, project):
         res = Result()
-        res.custom["no_review"] = True
+        res.need_review = False
 
         modules = list(filter(lambda m: m.name in self.modules, project.modules()))
         sources = [s.name for m in modules for s in m.sources]
@@ -31,9 +31,9 @@ class CompilationRule:
         entire_message = ""
         for s in sources:
             cmd = f"{self.compiler} {self.cflags} -c -o {get_object_file_name(s)} {s}"
-            retcode, out, err = session.run(cmd, retcode=None)
+            retcode, out, err = self.session.run(cmd, retcode=None)
             if retcode or err.strip() != "" or out.strip() != "":
-                res.custom["no_review"] = False
+                res.need_review = True
 
             if retcode:
                 res.penalty = True
@@ -45,9 +45,9 @@ class CompilationRule:
         linker_result = ""
         for c in object_combos:
             cmd = f"{self.compiler} {self.ldflags} {' '.join(c)}"
-            retcode, out, err = session.run(cmd, retcode=None)
+            retcode, out, err = self.session.run(cmd, retcode=None)
             if retcode or err.strip() != "" or out.strip() != "":
-                res.custom["no_review"] = False
+                res.need_review = True
 
             if retcode:
                 res.penalty = True

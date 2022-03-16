@@ -101,7 +101,7 @@ class ResourceSet:
 
     def files(self):
         for i in range(self.start, self.start + self.count):
-            yield File(self.template.format(i), FileType.EXTRA, self.root)
+            yield File(self.template.format(i=i, alph=chr(ord('a') + i)), FileType.EXTRA, self.root)
 
 
 def unique(gen_func):

@@ -10,7 +10,7 @@ class CompoundRule:
         self.rules = [construct_rule(rule_config) for rule_config in config["rules"]]
 
     def apply(self, project: Project):
-        res = Result()
+        res = Result(neutral=True)
         for r in self.rules:
             res += r.apply(project)
         return res
