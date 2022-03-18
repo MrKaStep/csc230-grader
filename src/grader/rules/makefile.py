@@ -70,10 +70,27 @@ class Step:
 
         elif self.prefix:
             for l in out.strip().split("\n"):
-                if not l.startswith(s.prefix):
+                if not l.startswith(self.prefix):
                     res.messages.append(f"Step {self.index} '{self.command}' failed: weird line in output:\n{l}")
                     return False
         return True
+
+
+class FileStatGetter:
+    def __init__(self, machine):
+        self.machine = machine
+
+        bash_path = machine.path("/bin/bash")
+        stat = bash_path.stat()
+
+        self.has_ns = hasattr(stat, "st_mtime_ns")
+
+    def get_cwd_stats_dict(self):
+        if self.has_ns:
+            return {f.name: f.stat().st_mtime_ns for f in self.machine.cwd.list()}
+        else:
+            time.sleep(1)
+            return {f.name: f.stat().st_mtime for f in self.machine.cwd.list()}
 
 
 @rule
@@ -81,6 +98,7 @@ class Step:
 class MakefileRule:
     def __init__(self, config):
         self.steps = [Step(s, i) for i, s in enumerate(config["steps"], 1)]
+        self.stat_getter = FileStatGetter(self.machine)
 
     def apply(self, project):
         res = Result()
@@ -90,13 +108,13 @@ class MakefileRule:
                 self.session.run(s.command)
                 continue
 
-            before = {f.name: f.stat().st_mtime_ns for f in self.machine.cwd.list()}
+            before = self.stat_getter.get_cwd_stats_dict()
 
             retcode, out, err = self.session.run(s.command, retcode=None)
             if retcode != 0:
                 res.messages.append(f"Step {s.index} failed: exit code {retcode}\nstdout:\n{out}\nstderr:\n{err}\n")
                 return res
-            after = {f.name: f.stat().st_mtime_ns for f in self.machine.cwd.list()}
+            after = self.stat_getter.get_cwd_stats_dict()
             for u in s.updates:
                 if u.type == UpdateType.CREATE:
                     if not (u.file not in before and u.file in after):

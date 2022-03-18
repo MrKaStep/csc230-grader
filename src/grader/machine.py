@@ -33,7 +33,6 @@ def get_local_machine():
 def with_machine_rule(cls):
     old_init = cls.__init__
     def new_init(self, config):
-        old_init(self, config)
         if "machine" not in config:
             machine_type = "local"
         else:
@@ -52,6 +51,7 @@ def with_machine_rule(cls):
         else:
             raise ValueError(f"Invalid machine type: {config['machine']['type']}")
         self.machine_type = machine_type
+        old_init(self, config)
     cls.__init__ = new_init
 
     old_apply = cls.apply
