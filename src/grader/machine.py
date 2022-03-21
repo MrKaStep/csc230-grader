@@ -59,14 +59,15 @@ def with_machine_rule(cls):
         with self.machine.tempdir() as tempdir:
             project_path = tempdir / "project"
             project_path.mkdir()
+            existing_files = set([f.name for f in project.root.list()])
             if self.files_to_copy:
-                existing_files = set([f.name for f in project.files()])
                 for fname in self.files_to_copy:
                     if fname in existing_files:
                         copy(project.root / fname, project_path / fname)
             else:
                 for f in project.files():
-                    copy(f.path, project_path / f.name)
+                    if f.name in existing_files:
+                        copy(f.path, project_path / f.name)
 
             with self.machine.cwd(project_path):
                 self.session = self.machine.session()

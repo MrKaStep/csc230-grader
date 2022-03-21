@@ -42,22 +42,23 @@ class CompilationRule:
             res.custom[f"COMPILATION_{s}"] = f"{cmd}\nstdout:\n{out}\nstderr:\n{err}\n\n"
             entire_message += res.custom[f"COMPILATION_{s}"]
 
-        linker_result = ""
-        for c in object_combos:
-            cmd = f"{self.compiler} {self.ldflags} {' '.join(c)}"
-            retcode, out, err = self.session.run(cmd, retcode=None)
-            if retcode or err.strip() != "" or out.strip() != "":
-                res.need_review = True
+        if not res.penalty:
+            linker_result = ""
+            for c in object_combos:
+                cmd = f"{self.compiler} {self.ldflags} {' '.join(c)}"
+                retcode, out, err = self.session.run(cmd, retcode=None)
+                if retcode or err.strip() != "" or out.strip() != "":
+                    res.need_review = True
 
-            if retcode:
-                res.penalty = True
-                res.comments.append("Didn't link")
+                if retcode:
+                    res.penalty = True
+                    res.comments.append("Didn't link")
 
-            linker_result = linker_result + f"{cmd}\nstdout:\n{out}\nstderr:\n{err}\n\n"
+                linker_result = linker_result + f"{cmd}\nstdout:\n{out}\nstderr:\n{err}\n\n"
 
-        res.custom["COMPILATION_linker"] = linker_result
+            res.custom["COMPILATION_linker"] = linker_result
+            entire_message += linker_result
 
-        entire_message += linker_result
         res.custom["COMPILATION_combined"] = entire_message
             
         return res

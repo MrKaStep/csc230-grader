@@ -68,7 +68,7 @@ def get_c_without_comments(f):
 
 
 def get_object_file_name(source_name):
-    return local.path(re.sub("\.[^\.]*$", ".o", source_name))
+    return source_name.__class__(re.sub("\.[^\.]*$", ".o", source_name))
 
 
 @lru_cache(maxsize=10)
