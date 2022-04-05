@@ -93,7 +93,11 @@ def handle_review(args):
         project_config = json.load(f)
 
     review_app = ReviewApp(config, rule_config, project_config)
-    review_app.review_all()
+
+    if args.student_id:
+        review_app.do_review(args.student_id)
+    else:
+        review_app.review_all()
 
 
 def handle_export(args):
@@ -134,6 +138,7 @@ def run():
 
     review_parser.add_argument("-r", "--rule-config", required=True)
     review_parser.add_argument("-p", "--project-config", required=True)
+    review_parser.add_argument("student_id", nargs='?')
 
     export_parser = subparsers.add_parser("export", add_help=False)
     export_parser.add_argument("-o", "--output", required=True)
