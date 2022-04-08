@@ -1,13 +1,10 @@
 class Result:
-    def __init__(self, neutral=False):
+    def __init__(self, need_review=True):
         self.penalty = 0
         self.messages = []
         self.comments = []
         self.custom = {} 
-        if neutral:
-            self.need_review = False
-        else:
-            self.need_review = True
+        self.need_review = need_review
 
     def __iadd__(self, other):
         self.penalty += other.penalty

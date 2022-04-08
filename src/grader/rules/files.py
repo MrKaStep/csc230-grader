@@ -2,9 +2,10 @@ from .rule import rule
 
 from grader.project import Project
 from grader.result import Result
-from grader.rules.decorators import occurence_counter, binary_rule
+from grader.rules.decorators import occurence_counter, binary_rule, skip_review_on_good
 
 @rule
+@skip_review_on_good
 @occurence_counter
 class ResourceSetCountRule:
     def __init__(self, config: dict):
@@ -23,6 +24,7 @@ class ResourceSetCountRule:
 
 
 @rule
+@skip_review_on_good
 @binary_rule
 class FilePresentRule:
     def __init__(self, config: dict):
@@ -43,10 +45,8 @@ class FilePresentRule:
         return res
 
 
-
-
-
 @rule
+@skip_review_on_good
 @occurence_counter
 class ExtraFilesRule:
     def __init__(self, config: dict):
@@ -56,12 +56,25 @@ class ExtraFilesRule:
         whitelist = set(f.name for f in project.files())
 
         res = Result()
+        extra_files = []
         for path in project.root.list():
             if path.name not in whitelist:
                 res.penalty += 1
                 res.messages.append(f"Extra file: {path.name}")
+                extra_files.append(path.name)
 
         if res.penalty:
-            res.comments.append("Some extra files found")
+            res.comments.append(f"Some extra files found{(': ' + ', '.join(extra_files)) if len(extra_files) < 6 else ''}")
 
+        return res
+
+
+@rule
+class LsRule:
+    def __init__(self, config: dict):
+        pass
+
+    def apply(self, project: Project):
+        res = Result(need_review=False);
+        res.custom["LS_root"] = "\n".join(f.name for f in sorted(project.root.list()))
         return res

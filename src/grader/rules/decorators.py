@@ -24,7 +24,7 @@ def _per_object(obj_type, annotate_comments, annotate_messages):
 
         old_apply = cls.apply
         def new_apply(self, project: Project):
-            res = Result()
+            res = Result(need_review=False)
             for o in getter(project):
                 try:
                     obj_res = old_apply(self, o)
@@ -96,6 +96,18 @@ def binary_rule(cls):
             res.penalty = self.fail_penalty
         else:
             res.penalty = 0
+        return res
+    cls.apply = new_apply
+
+    return cls
+
+
+def skip_review_on_good(cls):
+    old_apply = cls.apply
+    def new_apply(self, o):
+        res = old_apply(self, o)
+        if not res.penalty:
+            res.need_review = False
         return res
     cls.apply = new_apply
 

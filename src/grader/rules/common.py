@@ -10,8 +10,18 @@ class CompoundRule:
         self.rules = [construct_rule(rule_config) for rule_config in config["rules"]]
 
     def apply(self, project: Project):
-        res = Result(neutral=True)
+        res = Result(need_review=False)
         for r in self.rules:
             res += r.apply(project)
         return res
 
+
+@rule
+class ProjectPathRule:
+    def __init__(self, config: dict):
+        pass
+
+    def apply(self, project: Project):
+        res = Result(need_review=False)
+        res.custom["PROJECT_PATH"] = project.root
+        return res
