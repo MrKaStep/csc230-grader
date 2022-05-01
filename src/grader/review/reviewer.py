@@ -2,6 +2,8 @@ from grader.rules.rule import Result
 from grader.project import Project
 from grader.util import camel_to_snake_case
 
+import re
+
 
 _reviewer_registry = {}
 
@@ -22,8 +24,9 @@ def _make_callable(cls):
 
 def _enable_macros(cls):
     def expand_macros(self, message):
-        for k, v in self.macros.items():
-            message = message.replace(k, v)
+        delimiters = ".,:;!?\\s"
+        for k, v in sorted(self.macros.items(), key=lambda x: len(x[0]), reverse=True):
+            message = re.sub(f"(?<=[{delimiters}]){k}(?=[{delimiters}]|$)", v, message)
         return message
 
     cls.expand_macros = expand_macros

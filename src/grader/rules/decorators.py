@@ -3,7 +3,7 @@ from grader.result import Result
 
 import traceback
 
-def _per_object(obj_type, annotate_comments, annotate_messages):
+def _per_object(obj_type, annotate_comments, annotate_messages, pass_project):
     getter_func_map = {
         "module": Project.modules,
         "file": Project.files,
@@ -27,7 +27,10 @@ def _per_object(obj_type, annotate_comments, annotate_messages):
             res = Result(need_review=False)
             for o in getter(project):
                 try:
-                    obj_res = old_apply(self, o)
+                    if pass_project:
+                        obj_res = old_apply(self, o, project)
+                    else:
+                        obj_res = old_apply(self, o)
                     if self.per_obj_penalty_limit >= 0:
                         obj_res.penalty = min(obj_res.penalty, self.per_obj_penalty_limit)
 
@@ -39,6 +42,7 @@ def _per_object(obj_type, annotate_comments, annotate_messages):
                     res += obj_res
                 except Exception:
                     res.messages.append(f"Execution of rule {cls.__name__} failed at {o}:\n{traceback.format_exc()}")
+                    res.need_review = True
             return res
 
         cls.apply = new_apply
@@ -46,12 +50,12 @@ def _per_object(obj_type, annotate_comments, annotate_messages):
     return inner
 
 
-def per_source_file(annotate_comments=True, annotate_messages=True):
-    return _per_object("source_file", annotate_comments, annotate_messages)
+def per_source_file(annotate_comments=True, annotate_messages=True, pass_project=False):
+    return _per_object("source_file", annotate_comments, annotate_messages, pass_project)
 
 
-def per_module(annotate_comments=True, annotate_messages=True):
-    return _per_object("module", annotate_comments, annotate_messages)
+def per_module(annotate_comments=True, annotate_messages=True, pass_project=False):
+    return _per_object("module", annotate_comments, annotate_messages, pass_project)
 
 
 def occurence_counter(cls):

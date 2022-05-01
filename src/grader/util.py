@@ -71,8 +71,7 @@ def get_object_file_name(source_name):
     return source_name.__class__(re.sub("\.[^\.]*$", ".o", source_name))
 
 
-@lru_cache(maxsize=10)
-def get_symbols(source_path, machine=None, session=None):
+def get_object_path(source_path, machine=None, session=None):
     assert source_path.name.endswith(".c")
     assert machine is None and session is None or machine is not None and session is not None
 
@@ -95,23 +94,47 @@ def get_symbols(source_path, machine=None, session=None):
     except:
         raise RuntimeError(f"{source_path.name}: compilation failed")
 
+    return obj_path
+
+
+@lru_cache(maxsize=10)
+def get_symbols(source_path, machine=None, session=None):
+    obj_path = get_object_path(source_path, machine, session)
     with open(obj_path, "rb") as f:
         elf = ELFFile(f)
-
+        
         symtab = elf.get_section_by_name(".symtab")
 
         if not symtab:
             raise RuntimeError(f"{source_path.name}: .symtab not found")
 
-        num_symbols = symtab.num_symbols()
-
         symbols = {}
 
-        for i in range(num_symbols):
-            symbol = symtab.get_symbol(i)
-            symbol_type = symbol["st_info"]["type"]
-            if symbol_type == "STT_FUNC":
-                symbols[symbol.name] = {"bind": symbol["st_info"]["bind"]}
+        for symbol in symtab.iter_symbols():
+            symbols[symbol.name] = symbol["st_info"]
 
     os.remove(obj_path)
     return symbols
+
+
+@lru_cache(maxsize=10)
+def get_relocations(source_path, machine=None, session=None):
+    obj_path = get_object_path(source_path, machine, session)
+    with open(obj_path, "rb") as f:
+        elf = ELFFile(f)
+        # Here we're getting the SHT_RELA type section as it's more common
+        relocations = elf.get_section_by_name(".rela.text")
+        symtab = elf.get_section_by_name(".symtab")
+
+        if not relocations:
+            return set() 
+
+        res = set()
+        for rel in relocations.iter_relocations():
+            symbol = symtab.get_symbol(rel["r_info_sym"])
+            if symbol["st_info"]["type"] == "STT_NOTYPE":
+                res.add(symbol.name)
+
+    os.remove(obj_path)
+    return res
+
